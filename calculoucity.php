@@ -1,15 +1,13 @@
 <?php
-/**
- * @package calculoucity
- * @version 1.00
- */
 /*
-Plugin Name: Calculoucity
-Plugin URI: http://wordpress.org/plugins/calculoucity/
-Description: This is a plugin to play a game with numbers.
-Author: Tommy Göransson, Smelink AB
-Version: 0.99
-Author URI: http://smelink.se/
+ * Plugin Name: Calculoucity
+ * Plugin URI: http://wordpress.org/plugins/calculoucity/
+ * Description: This is a plugin to play a game with numbers.
+ * Author: Tommy Göransson, Smelink AB
+ * Text Domain: calculoucity
+ * Version: 1.00
+ * Author URI: http://smelink.se/
+ * License: MIT & GPL3
 */
 
 /*
@@ -26,18 +24,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 add_shortcode( 'calculoucity', 'calculoucity_func' );
 
-function theme_scripts() {
+function calculoucity_theme_scripts() {
   wp_enqueue_script('jquery');
 }
 
-add_action('wp_enqueue_scripts', 'theme_scripts');
+add_action('wp_enqueue_scripts', 'calculoucity_theme_scripts');
 
 function GetCalculoucityGrid() {
 	return '
 <p>
-	Målet är att få alla rutor att innehålla summan 10, färre drag är bättre.<br>
-	(Bara ställ markören i en ruta ock tryck på en siffra)<br>
-	Antal drag: <span id="calculoucity_moves">0</span>&nbsp;<span id="calculoucity_win"></span>
+	' . __('The goal is to get the sum 10 in all the boxes, fewer moves are better.', 'calculoucity') . '<br>
+	' . __('(Just put the cursor in a box and press a numberkey on the keyboard)', 'calculoucity') . '<br>
+	' . __('Number of moves', 'calculoucity') . ': <span id="calculoucity_moves">0</span>&nbsp;
+	<span id="calculoucity_win">'.__('You have finished the challenge!', 'calculoucity') . '</span>
 </p>
 <table class="calculoucity_table">
 	<tbody>
@@ -239,6 +238,8 @@ function calculoucity_head() {
 				
 				Init : function()
 				{
+					$('#calculoucity_win').hide();
+					
 					for(var y = 1; y < 10; y++) {
 						for(var x = 1; x < 10; x++) {
 							strCell = 'rc'+y+x;
@@ -248,6 +249,53 @@ function calculoucity_head() {
 
 					$('.calculoucity_input').on('keyup', function(e) {
 						var intCode = e.which;
+						switch (intCode) {
+							case 35:
+								//1
+								intCode = 49;
+								break;
+
+							case 40:
+								//2
+								intCode = 50;
+								break;
+
+							case 34:
+								//3
+								intCode = 51;
+								break;
+
+							case 37:
+								//4
+								intCode = 52;
+								break;
+
+							case 12:
+								//5
+								intCode = 53;
+								break;
+
+							case 39:
+								//6
+								intCode = 54;
+								break;
+
+							case 36:
+								//7
+								intCode = 55;
+								break;
+
+							case 38:
+								//8
+								intCode = 56;
+								break;
+
+							case 33:
+								//9
+								intCode = 57;
+								break;
+
+						}
 						if (intCode >= 49 && intCode <= 57 && Calculoucity.intIntervalId == 0) {
 							var strId = this.id;
 							Calculoucity.Calc(strId, intCode-48);
@@ -320,7 +368,7 @@ function calculoucity_head() {
 					});
 					
 					if (intResult == 81) {
-						$('#calculoucity_win').html('Du har klarat av utmaningen!');
+						$('#calculoucity_win').show();
 						$('.calculoucity_input').prop( 'disabled', true );
 					}
 					
